@@ -1,54 +1,32 @@
-import React, { useState, useEffect } from "react";
+const Sidebar = ({ isOpen, onClose, cartItems, setCartItems}) => {
 
-const Sidebar = ({ isOpen, onClose, cartItems, setCartItems, totalPrice }) => {
-
-    const [itemQuantities, setItemQuantities] = useState({});
-
-    useEffect(() => {
-        const updatedItemQuantities = {};
-        cartItems.forEach((prev) => {
-            updatedItemQuantities[prev.id] = prev.quantity;
-        });
-        setItemQuantities(updatedItemQuantities);
-    }, [cartItems]);
-
-
-    const increaseQuantity = (id) => {
-        setItemQuantities((prev) => ({
-            ...prev,
-            [id]: (prev[id] || 0) + 1, 
-        }));
+    // console.log("the carditems are : ",cartItems);
+    const increaseQuantity = (id) =>
+    {
         setCartItems((prevCartItems) =>
             prevCartItems.map((prev) =>
                 prev.id === id ? { ...prev, quantity: (prev.quantity || 0) + 1 } : prev
             )
         );
-    };
-
+    }
 
     const decreaseQuantity = (id) => {
-        setItemQuantities((prev) => ({
-            ...prev,
-            [id]: prev[id] && prev[id] > 1 ? prev[id] - 1 : prev[id]
-        }));
         setCartItems((prevCartItems) =>
             prevCartItems.map((prev) =>
                 prev.id === id ? { ...prev, quantity: (prev.quantity || 0) - 1 } : prev
             )
         );
-    };
+    }
 
     const clearAll = () => {
         setCartItems([]);
     };
 
-    const hadnleDelete = (id) => {
-        // setCardItems(cardItems.filter((item) => item.id !== id));
+    const handleDelete = (id) => {
         setCartItems((prev) => prev.filter((item) => item.id !== id));
     };
 
-    const total = cartItems.reduce((total, item) => total + (item.price * (itemQuantities[item.id])), 0);
-
+    const total = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
 
     return (
         <>
@@ -64,7 +42,7 @@ const Sidebar = ({ isOpen, onClose, cartItems, setCartItems, totalPrice }) => {
                 </div>
 
                 <div className="sidebar-content">
-                    {cartItems.length === 0 ? <p style={{ textAlign: "center", marginTop: "10%", color: "red" }}>No items in the cart</p> :
+                    {cartItems.length === 0 ? <p className="empty">Your card is Empty...</p> :
                         <div>
                             {cartItems.map((item) => (
                                 <div className="item" key={item.id}>
@@ -72,30 +50,29 @@ const Sidebar = ({ isOpen, onClose, cartItems, setCartItems, totalPrice }) => {
                                         <div className="">
                                             <img src={item.image} alt="" />
                                         </div>
-                                        
+
                                         <div className="">
-                                            <p>{item.name}</p>
-                                            {/* <b><p>{item.price * (itemQuantities[item.id] || 1)}</p></b> */}
-                                            <b><p>{`${item.price} * ${itemQuantities[item.id] || 1} = ${item.price * (itemQuantities[item.id] || 1)}`}</p></b>
+                                            <p>{item.category}</p>
+                                            <b><p>{`${item.price} * ${item.quantity } = ${item.price * item.quantity}`}</p></b>
                                         </div>
 
                                     </div>
                                     <div className="quantity-btn">
-                                        <button onClick={() => decreaseQuantity(item.id)} disabled={itemQuantities[item.id] === 1}>-</button>
-                                        <button> {item.quantity || itemQuantities[item.id] || 1} Qty.</button>
+                                      
+                                        <button onClick={() => decreaseQuantity(item.id)} disabled={item.quantity === 1}>-</button>
+                                        <p> {item.quantity} Qty.</p>
                                         <button onClick={() => increaseQuantity(item.id)}>+</button>
-                                        <button style={{ color: "red" }} onClick={() => hadnleDelete(item.id)}>Delete</button>
+                                        <button onClick={() => handleDelete(item.id)}><img width="20" height="20" src="https://img.icons8.com/ios-glyphs/30/filled-trash.png" alt="filled-trash"/></button>
                                     </div>
                                 </div>
                             ))}
                         </div>}
                 </div>
 
-                <div className="" style={{ marginTop: "10px" }}>
+                <div className="sidebar-bottom">
                     <b><p>The Total Length of your card is : {cartItems.length} </p></b>
-                    <b><p>The Total price of your card is : {total}</p></b>
+                    <b><p style={{marginBottom:"10px"}}>The Total price of your card is : {total}</p></b>
                 </div>
-
             </div>
         </>
     );
@@ -104,11 +81,4 @@ const Sidebar = ({ isOpen, onClose, cartItems, setCartItems, totalPrice }) => {
 export default Sidebar;
 
 
-//   const hadnleDelete = (id) => {
-//     setCartItems(cartItems.filter((item) => item.id !== id));
-//     setItemQuantities((prev) => {
-//       const updatedQuantities = { ...prev };
-//       delete updatedQuantities[id];
-//       return updatedQuantities;
-//     });
-//   };
+
